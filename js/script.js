@@ -1,49 +1,56 @@
-// handle search button
+const errorDiv = document.getElementById('error');
+
+//------------- handle search button-----------
 const searchBook = () => {
     const searchField = document.getElementById('search-field');
     const searchText = searchField.value;
-    console.log(searchText);
-    // clear data
+    //------ clear data---------
     searchField.value = '';
-    // error
-    const errorDiv = document.getElementById('error');
+    //-------- error handle---------
     if(searchText === ''){
-        errorDiv.innerText = 'search field can not be empty';
+        errorDiv.innerHTML = `<h6 class= "text-center text-danger"> search field can not be empty</h6>`;
+        const totalFound = document.getElementById('total-books');
+        totalFound.textContent = '';
+        const displaySearch = document.getElementById('search-result')
+        displaySearch.textContent = '';
         return;
     }
-    else{
-        errorDiv.innerText = '';
-    }
         
-    // load data
+    // ----------load data----------
     const url = `https://openlibrary.org/search.json?q=${searchText}`;
     fetch(url)
     .then(res => res.json())
-    .then(data => displaySearchResult(data.docs))
+    .then(data => displaySearchResult(data))
 
 }
 
-// display search result data
-const displaySearchResult = (docs) => {
+// ----------display search result data----------
+const displaySearchResult = (myBooks) => {
+    // ---------error handling---------
+    if(myBooks.numFound === 0){
+        errorDiv.innerHTML = `<h5 class="text-center text-danger">write the correct book name</h5>`;
+        const totalFound = document.getElementById('total-books');
+        totalFound.textContent = '';
+        const displaySearch = document.getElementById('search-result')
+        displaySearch.textContent = '';
+        return;
+            }
+            else{
+               errorDiv.textContent = '';
+            }
 
     const searchResult = document.getElementById('search-result');
-    searchResult.textContent = '';
+    searchResult.innerText = '';
+
  
-    // total books result
+    //------- total search result--------
+    const books = myBooks.docs
     const totalBooks = document.getElementById('total-books');
-        totalBooks.innerText = `search result: ${docs.length}`;
-        totalBooks.style.textAlign = 'center'
-        totalBooks.style.paddingBottom = '20px' 
+    totalBooks.innerHTML = `
+   <h3 class="text-center text-secondary">Total books found ${myBooks.numFound}</h3>
+   `;
     
-        // // error handling
-    if(docs.status === 404){
-        document.getElementById('error').innerText = 'No Result Found'
-    } else{
-        document.getElementById('error').innerText = '';
-    }
-
-
-    docs.forEach(book => {
+        books.forEach(book => {
         console.log(book);
         const div = document.createElement('div')
         div.classList.add('col');
