@@ -1,4 +1,4 @@
-
+// handle search button
 const searchBook = () => {
     const searchField = document.getElementById('search-field');
     const searchText = searchField.value;
@@ -8,11 +8,15 @@ const searchBook = () => {
     // error
     const errorDiv = document.getElementById('error');
     if(searchText === ''){
-        errorDiv.innerText = 'search field can not be empty.';
+        errorDiv.innerText = 'search field can not be empty';
+        return;
+    }
+    else{
+        errorDiv.innerText = '';
     }
         
     // load data
-    const url = `http://openlibrary.org/search.json?q=${searchText}`;
+    const url = `https://openlibrary.org/search.json?q=${searchText}`;
     fetch(url)
     .then(res => res.json())
     .then(data => displaySearchResult(data.docs))
@@ -21,15 +25,23 @@ const searchBook = () => {
 
 // display search result data
 const displaySearchResult = (docs) => {
-    // console.log(docs);
+
     const searchResult = document.getElementById('search-result');
     searchResult.textContent = '';
-
+ 
     // total books result
     const totalBooks = document.getElementById('total-books');
-        totalBooks.innerText = `total books ${docs.length}`;
+        totalBooks.innerText = `search result: ${docs.length}`;
         totalBooks.style.textAlign = 'center'
-        totalBooks.style.paddingBottom = '20px'
+        totalBooks.style.paddingBottom = '20px' 
+    
+        // // error handling
+    if(docs.status === 404){
+        document.getElementById('error').innerText = 'No Result Found'
+    } else{
+        document.getElementById('error').innerText = '';
+    }
+
 
     docs.forEach(book => {
         console.log(book);
